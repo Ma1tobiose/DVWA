@@ -24,7 +24,7 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=${{ github.event.repository.name }}
-            -Dsonar.sources=.
+            -Dsonar.sources=vulnerabilities
             -Dsonar.projectVersion=${{ github.ref_name }}
             -Dsonar.exclusions=${{ vars.SONAR_EXCLUSIONS }}
             -Dsonar.qualitygate.wait=true

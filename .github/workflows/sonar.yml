@@ -12,11 +12,6 @@ jobs:
     container:
       image: sonarsource/sonar-scanner-cli:11.5.0.2154_7.3.0
     steps:
-      - name: SAST Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: SAST SonarQube Scan
         run: |
           sonar-scanner \

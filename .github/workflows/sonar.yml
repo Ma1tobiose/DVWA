@@ -9,6 +9,8 @@ name: Sonarqube SAST Scan
 jobs:
   sonarqube:
     runs-on: self-hosted
+    container:
+      image: sonarsource/sonar-scanner-cli:11.5.0.2154_7.3.0
     steps:
       - name: SAST Checkout code
         uses: actions/checkout@v4
@@ -16,20 +18,17 @@ jobs:
           fetch-depth: 0
 
       - name: SAST SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        with:
-          args: >
-            -Dsonar.projectKey=${{ github.event.repository.name }}
-            -Dsonar.sources=vulnerabilities
-            -Dsonar.projectVersion=${{ github.ref_name }}
-            -Dsonar.exclusions=${{ vars.SONAR_EXCLUSIONS }}
-            -Dsonar.qualitygate.wait=true
-            -Dsonar.working.directory=target/.sonar
-            -Dsonar.sarifReportPaths=result.sarif
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=${{ github.event.repository.name }} \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.sources=${PWD} \
+            -Dsonar.projectVersion=${{ github.ref_name }} \
+            -Dsonar.exclusions="${{ vars.SONAR_EXCLUSIONS }}" \
+            -Dsonar.qualitygate.wait=true \
+            -Dsonar.working.directory=../target/.sonar \
+            -Dsonar.sarifReportPaths=result.sarif \
             -X
             
       - name: Upload report-task.txt
